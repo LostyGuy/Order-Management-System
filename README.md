@@ -40,6 +40,12 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ---
 
+## Event Processing
+
+- **To be visualized using Graphviz library**
+
+---
+  
 ## Tech Stack
 
 - SQL (MySQL)
