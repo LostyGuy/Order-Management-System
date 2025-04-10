@@ -42,7 +42,7 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ## Tech Stack
 
-- SQL (MySQL or PostgreSQL)
+- SQL (MySQL)
 - FastAPI / Python backend (future extension)
 - Optional: Simple HTML/JS frontend or CLI tool
 
