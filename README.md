@@ -50,6 +50,6 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 - SQL (MySQL)
 - FastAPI / Python backend (future extension)
-- Optional: Simple HTML/JS frontend or CLI tool
+- Optional: Simple HTML/JS frontend 
 
 ---
