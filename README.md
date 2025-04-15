@@ -65,8 +65,16 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 - **Recipe** – Maps menu items to required ingredients
   - **Dish Name**
   - **Ingridient 1#**
+  - **Quantity Of 1#**
+
   - **Ingridient 2#**
+  - **Quantity Of 2#**
+
   - **Ingridient 3#**
+  - **Quantity Of 3#**
+
+  - **Ingridient ...#**
+  - **Quantity Of ...#**
 
 ---
 
