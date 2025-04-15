@@ -16,11 +16,57 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 ### Tables
 
 - **Customers** – Stores customer details  
+  - **Loyalty Card Id**
+  - **Name**
+  - **Surname**
+  - **Phone Number**
+  - **Discount**
+  - **Date Of Creation**
+  - **Modified At**
+  - **Status** - Active/Inactive
 - **Menu_Items** – Menu of available dishes  
-- **Orders** – Order headers with customer and timestamp  
-- **Order_Items** – Order details: which items and how many  
-- **Inventory** – Tracks ingredients in stock  
-- **Recipe** – Maps menu items to required ingredients  
+  - **Dish Name**
+  - **Ingridient 1#**
+  - **Quantity Of 1#**
+
+  - **Ingridient 2#**
+  - **Quantity Of 2#**
+
+  - **Ingridient 3#**
+  - **Quantity Of 3#**
+
+  - **Ingridient ...#**
+  - **Quantity Of ...#**
+
+  - **Status** - If avaiable in current offer
+- **Orders** – Order headers with customer and timestamp
+  - **Table Id** 
+  - **Ordered Dishes**
+  - **Quantity**
+  - **Date**
+  - **Status**
+  - **Enough Ingridients**
+- **Order_Items** – Order details: which items and how many 
+  - **Table Id** 
+  - **Ordered Dishes**
+  - **Quantity**
+- **Inventory** – Tracks ingredients in stock
+  - **Ingridient 1#**
+  - **Quantity Of 1#**
+
+  - **Ingridient 2#**
+  - **Quantity Of 2#**
+
+  - **Ingridient 3#**
+  - **Quantity Of 3#**
+
+  - **Ingridient ...#**
+  - **Quantity Of ...#**
+- **Recipe** – Maps menu items to required ingredients
+  - **Dish Name**
+  - **Ingridient 1#**
+  - **Ingridient 2#**
+  - **Ingridient 3#**
 
 ---
 
@@ -35,6 +81,7 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 - `trg_deduct_stock` – Automatically deducts ingredients when an item is added to an order
 
 ### Views
+- `vw_specifiedOrder` - Shows details of order with given id
 - `vw_TopSellingItems` – Shows top-selling dishes
 - `vw_InventoryStatus` – Shows ingredient stock levels and alerts
 
