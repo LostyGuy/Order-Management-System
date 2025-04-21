@@ -18,15 +18,19 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 - **Customers** – Stores customer details  
   - **Loyalty Card Id**
   - **Name**
+
   - **Surname**
   - **Phone Number**
+
   - **Discount**
-  - **Date Of Creation**
+  - **Created At**
+
   - **Modified At**
   - **Status** - Active/Inactive
+
 - **Menu_Items** – Menu of available dishes  
   - **Dish Name**
-  - **Ingridient 1#**
+  <!-- - **Ingridient 1#**
   - **Quantity Of 1#**
 
   - **Ingridient 2#**
@@ -36,35 +40,30 @@ This project simulates a real-world restaurant system using SQL. It includes cor
   - **Quantity Of 3#**
 
   - **Ingridient ...#**
-  - **Quantity Of ...#**
-
+  - **Quantity Of ...#** -->
   - **Status** - If avaiable in current offer
+
 - **Orders** – Order headers with customer and timestamp
   - **Table Id** 
   - **Ordered Dishes**
   - **Quantity**
+
   - **Date**
-  - **Status**
-  - **Enough Ingridients**
+  - **Status** 
+
 - **Order_Items** – Order details: which items and how many 
   - **Table Id** 
   - **Ordered Dishes**
   - **Quantity**
-- **Inventory** – Tracks ingredients in stock
-  - **Ingridient 1#**
-  - **Quantity Of 1#**
 
-  - **Ingridient 2#**
-  - **Quantity Of 2#**
+- **Ingredients** – Tracks ingredients in stock
+  - **Ingridient**
+  - **Quantity#**
 
-  - **Ingridient 3#**
-  - **Quantity Of 3#**
-
-  - **Ingridient ...#**
-  - **Quantity Of ...#**
+  
 - **Recipe** – Maps menu items to required ingredients
   - **Dish Name**
-  - **Ingridient 1#**
+  - **Ingridients**
   - **Quantity Of 1#**
 
   - **Ingridient 2#**
