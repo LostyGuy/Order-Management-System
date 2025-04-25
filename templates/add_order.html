@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placing</title>
+</head>
+<style>
+
+* {
+
+    box-sizing: border-box;
+}
+
+.border {
+
+    border: 2px solid black;
+    color: black;
+}
+
+</style>
+<script>
+    function addDish() {
+
+        // TODO: Add validaton to check whenever the id is not doubled 
+
+        var dishCount = document.querySelectorAll('select[name$="d"]').length;
+        var dishID = dishCount + 1;
+
+        var dishSelect = document.createElement("select");
+            dishSelect.name = dishID + "d";
+            dishSelect.required = true;
+
+        var dishOptionDefault = document.createElement("option");
+            dishOptionDefault.value = "";
+            dishOptionDefault.disabled = true;
+            dishOptionDefault.selected = true;
+            dishOptionDefault.textContent = "Select Dish";
+            dishSelect.appendChild(dishOptionDefault);
+
+        {% for dish in menu %}  
+            var dishOption = document.createElement("option");
+            dishOption.value = "{{ dish.menu_id }}";
+            dishOption.textContent = "{{ dish.position_name }}";
+            dishSelect.appendChild(dishOption);
+        {% endfor %}
+
+        var quantity = document.createElement("input");
+        quantity.type = "number";
+        quantity.min = 1;
+        quantity.name = dishID + "q";
+        quantity.placeholder = "Quantity";
+        quantity.required = true;
+
+        var br = document.createElement("br");
+
+        var border = document.createElement("section");
+            border.className = "border";
+            border.id = "dish" + dishID;
+
+            var button = document.createElement("button");
+                button.type = "button";
+                button.textContent = "Remove Dish";
+                button.onclick = border.remove.bind(border);
+
+            border.appendChild(dishSelect);
+            border.appendChild(quantity);
+            border.appendChild(button)
+            border.appendChild(br);
+
+        var container = document.querySelector("form");
+            container.appendChild(border);
+    }
+</script>
+<body>
+    <section class="Container">
+        <section class="Placing_Template">
+            <h1>Order Placing</h1>
+            <form method="POST" action="/add_order" id="orderForm">
+                <section class="border">
+                    <input type="text" name="table_number" placeholder="Table Number" required><br>
+                </section>
+
+                <section class="border">
+                    <select required name="1d">
+                        <option value="" disabled selected>Select Dish</option>
+                        
+                        {%for dish in menu%}
+                        <option value="{{ dish.menu_id }}">{{ dish.position_name }}</option>
+                        {% endfor %}
+
+                    </select>
+                    <input type="number" name="1q" placeholder="Quantity" required>
+                    <br>
+                </section>
+
+            </form>
+            <button type="button" onclick="addDish()">Add Dish</button>
+            <button type="submit" form="orderForm">Submit Order</button>
+            
+        </section>
+
+    </section>
+
+</body>
+</html>
