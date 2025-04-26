@@ -16,64 +16,16 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 ### Tables
 
 - **Customers** – Stores customer details  
-  - **Loyalty Card Id**
-  - **Name**
-
-  - **Surname**
-  - **Phone Number**
-
-  - **Discount**
-  - **Created At**
-
-  - **Modified At**
-  - **Status** - Active/Inactive
 
 - **Menu_Items** – Menu of available dishes  
-  - **Dish Name**
-  <!-- - **Ingridient 1#**
-  - **Quantity Of 1#**
-
-  - **Ingridient 2#**
-  - **Quantity Of 2#**
-
-  - **Ingridient 3#**
-  - **Quantity Of 3#**
-
-  - **Ingridient ...#**
-  - **Quantity Of ...#** -->
-  - **Status** - If avaiable in current offer
 
 - **Orders** – Order headers with customer and timestamp
-  - **Table Id** 
-  - **Ordered Dishes**
-  - **Quantity**
-
-  - **Date**
-  - **Status** 
 
 - **Order_Items** – Order details: which items and how many 
-  - **Table Id** 
-  - **Ordered Dishes**
-  - **Quantity**
 
 - **Ingredients** – Tracks ingredients in stock
-  - **Ingridient**
-  - **Quantity#**
 
-  
 - **Recipe** – Maps menu items to required ingredients
-  - **Dish Name**
-  - **Ingridients**
-  - **Quantity Of 1#**
-
-  - **Ingridient 2#**
-  - **Quantity Of 2#**
-
-  - **Ingridient 3#**
-  - **Quantity Of 3#**
-
-  - **Ingridient ...#**
-  - **Quantity Of ...#**
 
 ---
 
@@ -102,8 +54,9 @@ This project simulates a real-world restaurant system using SQL. It includes cor
   
 ## Tech Stack
 
-- SQL (MySQL)
+- SQL: MySQL/SQLAlchemy
 - FastAPI / Python backend
-- Optional: Simple HTML/JS frontend 
+- Optional: Simple HTML/CSS/JS frontend 
+- Visualization Graphviz
 
 ---
