@@ -7,7 +7,11 @@ from app import schemas, models, database
 import logging as log
 import time as t
 
-log.basicConfig(level=log.INFO, filename="app/main_log")
+log.basicConfig(level='INFO',
+                filemode='a',
+                filename='app/main_log.log',
+                force=True)
+log.getLogger("watchfiles.main").setLevel(log.WARNING)
 
 
 app = FastAPI()
@@ -18,7 +22,6 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)):
-    # sales = db.query(models.Sale).all()
     return templates.TemplateResponse("default.html", {"request": request})
 
 @app.get("/add_dish_html", response_class=HTMLResponse)
@@ -42,14 +45,44 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     log.info(f"Form data: {form_data}")
     
     # table_id
-    # form_data_ti = form_data.get("table_id")
+    form_data_ti = form_data.get("table_number")
+    log.info(f"Table ID: {form_data_ti}")
     
-    # combined positions
-    # form_data_pos = form_data.getlist("position_name")
+    # ---> combined positions and quantity <---
+    def get_pos_qti(form_data) -> list[int]:
+        log.info("________________________________________")
+        form_data_pos: list[int] = []
+        form_data_qti: list[int] = []
+        pos_id: int = 1
+        qti_id: int = 1
+        for i in form_data.keys():
+            log.info(f"Key: {i}")
+            log.info(f"Value: {form_data.get(i)}")
+            
+            if i.endswith('d'):
+                form_data_pos.append(form_data.get(i))
+                pos_id += 1
+            elif i.endswith('q'):
+                form_data_qti.append(form_data.get(i))
+                qti_id += 1
+            elif i.endswith('number'):
+                pass
+            else:
+                break
+        return form_data_pos, form_data_qti
     
-    # combined quantities
+    form_data_pos, form_data_qti = get_pos_qti(form_data)
     
-    # sale = models.Sale(**form_data)
-    # db.add(sale)
-    # db.commit()
+    log.info(f"Form data positions: {form_data_pos, form_data_qti}")
+    
+    placed_order = models.orders(
+        table_id=form_data_ti,
+        positions=",".join(form_data_pos),
+        quantity=",".join(form_data_qti),
+        order_status="Active"
+    )
+    db.add(placed_order)
+    db.commit()
+    db.refresh(placed_order)
+    log.info(f"Placed order: {placed_order}")
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
