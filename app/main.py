@@ -4,6 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from app import schemas, models, database
+import logging as log
+import time as t
+
+log.basicConfig(level=log.INFO, filename="app/main_log")
+
 
 app = FastAPI()
 
@@ -26,16 +31,25 @@ async def add_dish(request: Request, db: Session = Depends(database.get_db)):
     return templates.TemplateResponse("add_dish.html", {"request": request, "html_snippet": html_snippet})
 
 @app.get("/weiter", response_class=HTMLResponse)
-async def UI(request: Request, db: Session = Depends(database.get_db)):
+async def Weiter_Interface(request: Request, db: Session = Depends(database.get_db)):
     menu = db.query(models.menu).filter(models.menu.position_name != None).all()
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
-@app.post("/weiter", response_class=HTMLResponse)
-async def UI_add(request: Request, db: Session = Depends(database.get_db)):
+@app.post("/weiter_p", response_class=HTMLResponse)
+async def place_order(request: Request, db: Session = Depends(database.get_db)):
+    menu = db.query(models.menu).filter(models.menu.position_name != None).all()
     form_data = await request.form()
-    # Process the form data and save it to the database
-    # For example, you can create a new Sale object and add it to the session
+    log.info(f"Form data: {form_data}")
+    
+    # table_id
+    # form_data_ti = form_data.get("table_id")
+    
+    # combined positions
+    # form_data_pos = form_data.getlist("position_name")
+    
+    # combined quantities
+    
     # sale = models.Sale(**form_data)
     # db.add(sale)
     # db.commit()
-    return templates.TemplateResponse("add_order.html", {"request": request})
+    return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})

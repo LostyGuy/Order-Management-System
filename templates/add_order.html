@@ -1,3 +1,4 @@
+<!-- TODO: Add validaton to check whenever the id is not doubled  -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,11 +19,18 @@
     color: black;
 }
 
+.Placing_Template {
+
+    min-width: 50%;
+    min-height: 270px;
+    float: left;
+    margin: 0;
+    content_alight: center;
+}
+
 </style>
 <script>
     function addDish() {
-
-        // TODO: Add validaton to check whenever the id is not doubled 
 
         var dishCount = document.querySelectorAll('select[name$="d"]').length;
         var dishID = dishCount + 1;
@@ -76,9 +84,10 @@
     <section class="Container">
         <section class="Placing_Template">
             <h1>Order Placing</h1>
-            <form method="POST" action="/add_order" id="orderForm">
+            <form method="POST" action="/weiter_p" id="orderForm">
                 <section class="border">
-                    <input type="text" name="table_number" placeholder="Table Number" required><br>
+                    <label for="table_number">Table Number: </label>
+                    <input type="number" name="table_number" placeholder="Number" required min=1><br>
                 </section>
 
                 <section class="border">
