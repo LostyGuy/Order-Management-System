@@ -49,7 +49,7 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ### Main Page
 
-![### Main Page](https://img.youtube.com/vi/VIDEO_ID/0.jpg)(RDME_files/Main_Page.png)
+![Main Page](RDME_files/Main_Page.png)
 
 ### Order Making
 
@@ -57,7 +57,7 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ### Kitchen View
 
-![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)(RDME_files/Kitchen_View.png)
+![Video Title](RDME_files/Kitchen_View.png)
 
 ---
 
