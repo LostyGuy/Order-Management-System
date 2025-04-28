@@ -56,8 +56,6 @@ function inc(iter) {
             <section class="box" id="{{item[0]}}b">
                 <h1>Order number: {{item[0]}}</h1>
                 {% for dish_list in item[1:] %}
-                    {{dish_list}}
-
                     {% for dish in dish_list.keys() %}
                     
                     <p>Position: {{dish}} || Quantity: {{dish_list.get(dish)}} </p>
@@ -70,5 +68,6 @@ function inc(iter) {
             </section>
         {% endfor %}
     </section>
+    <a href="/"><button>Go back</button></a>
 </body>
 </html>

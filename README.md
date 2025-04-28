@@ -45,6 +45,21 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 - `vw_InventoryStatus` – Shows ingredient stock levels and alerts
 
 ---
+## Web Preview
+
+### Main Page
+
+[![### Main Page](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Main_Page.png)
+
+### Order Making
+
+[![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Order_Page.mp4)
+
+### Kitchen View
+
+[![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Kitchen_View.png)
+
+---
 
 ## Event Processing
 

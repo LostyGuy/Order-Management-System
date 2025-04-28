@@ -87,6 +87,7 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     log.info(f"Placed order: {placed_order}")
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
+# TODO: pass name of the dish instead of intigers
 @app.get("/k_v", response_class=HTMLResponse)
 async def kv(request: Request, db: Session = Depends(database.get_db)):
     orders = db.query(models.orders).filter(models.orders.order_status == "Active").all()
