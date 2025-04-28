@@ -53,7 +53,7 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ### Order Making
 
-[![Watch the video](https://img.youtube.com/vi/_5tFXJQIzi4/0.jpg)](RDME_files/Order_Page.mp4)
+https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
 
 ### Kitchen View
 
