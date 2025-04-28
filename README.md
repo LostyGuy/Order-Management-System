@@ -49,15 +49,15 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 
 ### Main Page
 
-[![### Main Page](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Main_Page.png)
+![### Main Page](https://img.youtube.com/vi/VIDEO_ID/0.jpg)(RDME_files/Main_Page.png)
 
 ### Order Making
 
-[![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Order_Page.mp4)
+![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)(RDME_files/Order_Page.mp4)
 
 ### Kitchen View
 
-[![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](RDME_files/Kitchen_View.png)
+![Video Title](https://img.youtube.com/vi/VIDEO_ID/0.jpg)(RDME_files/Kitchen_View.png)
 
 ---
 
