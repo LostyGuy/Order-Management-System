@@ -60,3 +60,5 @@ This project simulates a real-world restaurant system using SQL. It includes cor
 - Visualization Graphviz
 
 ---
+
+### Database server - XAMPP

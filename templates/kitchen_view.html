@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales</title>
+</head>
+<style>
+
+* {
+
+    box-sizing: border-box;
+    text-wrap: break-word; 
+}
+
+.box_holder {
+
+    dysplay: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+}
+
+.box {
+
+    border: 2px solid black;
+    min-width: 25%;
+    min-height: 270px;
+    float: left;
+    margin: 0;
+    justify-content: center;
+    text-align: center;
+    
+
+}
+
+</style>
+<script language="javascript">
+
+function set_status() {}
+function rm_board() {}
+function inc(iter) {
+    if (iter == 0) {
+        var iter = 0;
+    } else {
+        return iter++;
+    }
+}
+
+</script>
+<body>
+
+    <section class="box_holder">
+        {% for item in kv_order.items() %}
+            
+            <section class="box" id="{{item[0]}}b">
+                <h1>Order number: {{item[0]}}</h1>
+                {% for dish_list in item[1:] %}
+                    {{dish_list}}
+
+                    {% for dish in dish_list.keys() %}
+                    
+                    <p>Position: {{dish}} || Quantity: {{dish_list.get(dish)}} </p>
+                    {% endfor %}
+
+                {% endfor %}
+                <br>
+                <button onclick="set_status()">Complete</button>
+                <button onclick="rm_board()">Remove from board</button>
+            </section>
+        {% endfor %}
+    </section>
+</body>
+</html>

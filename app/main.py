@@ -86,3 +86,28 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     db.refresh(placed_order)
     log.info(f"Placed order: {placed_order}")
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
+
+@app.get("/k_v", response_class=HTMLResponse)
+async def kv(request: Request, db: Session = Depends(database.get_db)):
+    orders = db.query(models.orders).filter(models.orders.order_status == "Active").all()
+    k_orders: dict[int,list[str, str]] = {}
+    list_of_dishes = {}
+    for order in orders:
+        order.positions = order.positions.split(",")
+        order.quantity = order.quantity.split(",")
+        # log.info(order.positions, order.quantity)
+        k_orders[order.order_id] = {
+            "positions": order.positions,
+            "quantity": order.quantity
+        }
+        # log.info(k_orders[order.order_id].values())
+        kv_order: dict[str,str]= {}
+        # log.info(range(len(k_orders[order.order_id]["positions"])))
+        
+        for i in range(len(k_orders[order.order_id]["positions"])):
+            kv_order[k_orders[order.order_id]["positions"][i]] = k_orders[order.order_id]["quantity"][i]
+            list_of_dishes[order.order_id] = kv_order
+        # log.info(kv_order)
+        log.info(list_of_dishes)
+        
+    return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes, "id": 0})
