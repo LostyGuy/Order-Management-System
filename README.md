@@ -1,6 +1,6 @@
-# Restaurant Order Management System (SQL Project)
+# Restaurant Order Management System (ORM/SQL- Project)
 
-This project simulates a real-world restaurant system using SQL. It includes core database design, business logic (stored procedures and triggers), and reporting views.
+This project simulates a real-world restaurant system using ORM/SQL. It includes core database design, business logic (stored procedures and triggers), and reporting views.
 
 ## Features
 
@@ -69,7 +69,7 @@ https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
   
 ## Tech Stack
 
-- SQL: MySQL/SQLAlchemy
+- SQL/ORM: MySQL/SQLAlchemy
 - FastAPI / Python backend
 - Optional: Simple HTML/CSS/JS frontend 
 - Visualization Graphviz
