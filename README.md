@@ -32,7 +32,7 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 ## Key SQL Concepts
 
 ### Stored Procedures
-- `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items
+<!-- - `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items -->
 - `sp_RestockIngredient(ingredient_id, quantity)` – Restocks ingredients
 - `sp_GenerateSalesReport(date)` – Shows sales data for a given day
 
@@ -70,9 +70,9 @@ https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
 ## Tech Stack
 
 - SQL/ORM: MySQL/SQLAlchemy
-- FastAPI / Python backend
+- Backend: FastAPI / Python
 - Optional: Simple HTML/CSS/JS frontend 
-- Visualization Graphviz
+- Visualization: Graphviz
 
 ---
 
