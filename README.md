@@ -32,17 +32,17 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 ## Key SQL Concepts
 
 ### Stored Procedures
-- [X]`sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items
-- []`sp_RestockIngredient(ingredient_id, quantity)` – Restocks ingredients
-- []`sp_GenerateSalesReport(date)` – Shows sales data for a given day
+- [x]`sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items
+- [ ]`sp_RestockIngredient(ingredient_id, quantity)` – Restocks ingredients
+- [ ]`sp_GenerateSalesReport(date)` – Shows sales data for a given day
 
 ### Triggers
-- []`trg_deduct_stock` – Automatically deducts ingredients when an item is added to an order
+- [ ]`trg_deduct_stock` – Automatically deducts ingredients when an item is added to an order
 
 ### Views
-- [X]`vw_specifiedOrder` - Shows details of order with given id
-- []`vw_TopSellingItems` – Shows top-selling dishes
-- []`vw_InventoryStatus` – Shows ingredient stock levels and alerts
+- [x] `vw_specifiedOrder` - Shows details of order with given id
+- [ ] `vw_TopSellingItems` – Shows top-selling dishes
+- [ ] `vw_InventoryStatus` – Shows ingredient stock levels and alerts
 
 ---
 ## Web Preview
@@ -53,8 +53,7 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 
 ### Order Making
 
-![Video](https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8)
-
+https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
 
 ### Kitchen View
 
