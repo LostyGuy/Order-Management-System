@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, relationship
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
 from app import schemas, models, database
 import logging as log
 import time as t
@@ -20,10 +21,12 @@ models.Base.metadata.create_all(bind=database.engine)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# Main Page
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)):
     return templates.TemplateResponse("default.html", {"request": request})
 
+# Order Page - Add Positions Box
 @app.get("/add_dish_html", response_class=HTMLResponse)
 async def add_dish(request: Request, db: Session = Depends(database.get_db)):
     html_snippet = """
@@ -33,11 +36,13 @@ async def add_dish(request: Request, db: Session = Depends(database.get_db)):
     """
     return templates.TemplateResponse("add_dish.html", {"request": request, "html_snippet": html_snippet})
 
+# Order Page
 @app.get("/weiter", response_class=HTMLResponse)
 async def Weiter_Interface(request: Request, db: Session = Depends(database.get_db)):
     menu = db.query(models.menu).filter(models.menu.position_name != None).all()
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
+# Order Page - Get Data
 @app.post("/weiter_p", response_class=HTMLResponse)
 async def place_order(request: Request, db: Session = Depends(database.get_db)):
     menu = db.query(models.menu).filter(models.menu.position_name != None).all()
@@ -87,28 +92,39 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     log.info(f"Placed order: {placed_order}")
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
-# TODO: pass name of the dish instead of intigers
+# Kitchen Page - View Orders
 @app.get("/k_v", response_class=HTMLResponse)
 async def kv(request: Request, db: Session = Depends(database.get_db)):
-    orders = db.query(models.orders).filter(models.orders.order_status == "Active").all()
-    k_orders: dict[int,list[str, str]] = {}
-    list_of_dishes = {}
-    for order in orders:
-        order.positions = order.positions.split(",")
+    log.info("________________________________________")
+    orders_from_db = db.query(models.orders).filter(models.orders.order_status == "Active").all()
+
+    temp_orders: dict[int,list[str, str]] = {}
+    list_of_dishes: dict[int, dict[str, str]] = {}
+
+    for order in orders_from_db: # Single Order
+        log.info(f"order.positions: {order.positions}, order.quantity: {order.quantity}")
+        
+        order.positions = order.positions.split(",") # More readable
         order.quantity = order.quantity.split(",")
-        # log.info(order.positions, order.quantity)
-        k_orders[order.order_id] = {
+
+        # replace number with name
+        op_iteration = 0
+        for operation in order.positions:
+            menu = db.query(models.menu.position_name).filter(models.menu.menu_id == operation).all()
+            order.positions[op_iteration] = menu[0][0]
+            op_iteration += 1
+        
+        temp_orders[order.order_id] = {
             "positions": order.positions,
             "quantity": order.quantity
         }
-        # log.info(k_orders[order.order_id].values())
-        kv_order: dict[str,str]= {}
-        # log.info(range(len(k_orders[order.order_id]["positions"])))
-        
-        for i in range(len(k_orders[order.order_id]["positions"])):
-            kv_order[k_orders[order.order_id]["positions"][i]] = k_orders[order.order_id]["quantity"][i]
-            list_of_dishes[order.order_id] = kv_order
-        # log.info(kv_order)
-        log.info(list_of_dishes)
+        log.info(f"temp_orders: {temp_orders[order.order_id]}")
+        list_of_dishes[order.order_id] = {}
+        for i in range(len(temp_orders[order.order_id]["positions"])):
+            
+            list_of_dishes[order.order_id].update({temp_orders[order.order_id]["positions"][i] : temp_orders[order.order_id]["quantity"][i]})
+            
+            log.info(f"list_of_dishes: {list_of_dishes[order.order_id]}")
+        log.info(F"list_of_dishes: {list_of_dishes}")
         
     return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes, "id": 0})
