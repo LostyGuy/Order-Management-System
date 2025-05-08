@@ -57,22 +57,22 @@ https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
 
 ### Kitchen View
 
-![Video Title](RDME_files/Kitchen_View.png)
+![Kitchen View](RDME_files/Kitchen_View.png)
 
 ---
 
 ## Event Processing
 
-- **To be visualized using Graphviz library**
+![Order Processing](RDME_files/order_processing.png)
 
 ---
   
 ## Tech Stack
 
 - SQL/ORM: MySQL/SQLAlchemy
-- FastAPI / Python backend
-- Optional: Simple HTML/CSS/JS frontend 
-- Visualization Graphviz
+- Backend: FastAPI / Python
+- Frontend: Simple HTML/CSS/JS
+- Visualization: Graphviz
 
 ---
 
