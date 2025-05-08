@@ -32,7 +32,7 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 ## Key SQL Concepts
 
 ### Stored Procedures
-- `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items
+- `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items [x]
 - `sp_RestockIngredient(ingredient_id, quantity)` – Restocks ingredients
 - `sp_GenerateSalesReport(date)` – Shows sales data for a given day
 
