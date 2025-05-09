@@ -14,7 +14,6 @@ log.basicConfig(level='INFO',
                 force=True)
 log.getLogger("watchfiles.main").setLevel(log.WARNING)
 
-
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=database.engine)
@@ -88,6 +87,44 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     )
     db.add(placed_order)
     db.commit()
+    
+    def Ingredient_Trigger(form_data_pos, form_data_qti, db: Session = Depends(database.get_db)) -> None:
+        # for every dish take it's quantity ### DONE
+        # iterate for every ingerient that's avaiable ### DONE
+        # look how much ingerients each dish requires and multiply by quantity from above ### DONE
+        # add these values to table "locked_ingredients" and substract the exact same amount from "quantity"
+        # -------------------------------------------------------
+        # make a func that will restore to "0" every cell when the next day come
+        # this trigger will be executed every time the order comes to db
+        for dish in form_data_pos:
+            # ex. fries
+            qti: int = form_data_qti[form_data_pos.index(dish)]
+            # each ingredient of fries
+            for ingredients in db.query(models.menu.required_ingredients).filter(models.menu.menu_id == dish).all():
+                # ex. potatoes, oil, salt
+                ingredients: list[str] = ingredients[0].split(",")
+                qti_ingredient: list[int] = ((db.query(models.menu.quantity).filter(models.menu.menu_id == dish).all())[0])[0].split(",")
+                log.info(f"Ingredient separated: {ingredients}, Quantity: {qti_ingredient}")
+                for ingredient in ingredients, qti_ingredient:
+                    # get the quantity of each ingredient and multiply
+                    ingredient_index = ingredients.index(ingredient)
+                    ingredient_quantity = qti * int(qti_ingredient[ingredient_index])
+                    
+                    current_locked_quantity = db.query(models.ingredients.locked_quantity).filter(models.ingredients.ingredient_name == ingredient).all()
+                    log.info(f"Current locked quantity: {current_locked_quantity}")
+                    
+                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"locked_quantity": current_locked_quantity + ingredient_quantity})
+                    
+                    current_ingredient_quantity = db.query(models.ingredients.quantity).filter(models.ingredients.ingredient_name == ingredient).all()
+                    
+                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"quantity": current_ingredient_quantity - current_locked_quantity})
+                    
+                    db.commit()
+                    pass    
+                pass
+        pass
+    
+    Ingredient_Trigger(form_data_pos, form_data_qti,db)
     db.refresh(placed_order)
     log.info(f"Placed order: {placed_order}")
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})

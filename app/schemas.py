@@ -18,6 +18,7 @@ class IngridientsBase(BaseModel):
     ingredient_name: str
     quantity: list[int]
     ingredient_type: str
+    locked_quantity: float
 
 class Loyalty_CardsBase(BaseModel):
     guest_id: int

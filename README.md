@@ -32,7 +32,8 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 ## Key SQL Concepts
 
 ### Stored Procedures
-- `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items [x]
+ <!-- \/ DONE -->
+- `sp_PlaceOrder(customer_id, item_id, quantity)` – Places a new order and links order items 
 - `sp_RestockIngredient(ingredient_id, quantity)` – Restocks ingredients
 - `sp_GenerateSalesReport(date)` – Shows sales data for a given day
 
@@ -40,6 +41,7 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 - `trg_deduct_stock` – Automatically deducts ingredients when an item is added to an order
 
 ### Views
+<!-- \/ DONE -->
 - `vw_specifiedOrder` - Shows details of order with given id
 - `vw_TopSellingItems` – Shows top-selling dishes
 - `vw_InventoryStatus` – Shows ingredient stock levels and alerts

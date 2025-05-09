@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2025 at 12:25 PM
+-- Generation Time: May 09, 2025 at 07:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,31 +30,32 @@ SET time_zone = "+00:00";
 CREATE TABLE `ingredients` (
   `ingredient_id` int(11) NOT NULL,
   `ingredient_name` text NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `ingredient_type` text NOT NULL COMMENT 'ex. grams, ml, piece'
+  `quantity` float NOT NULL,
+  `ingredient_type` text NOT NULL COMMENT 'ex. grams, ml, piece',
+  `Locked_Quantity` float NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
 --
 -- Dumping data for table `ingredients`
 --
 
-INSERT INTO `ingredients` (`ingredient_id`, `ingredient_name`, `quantity`, `ingredient_type`) VALUES
-(1, 'potato', 50, 'KG'),
-(2, 'oil', 20, 'L'),
-(3, 'salt', 10, 'KG'),
-(4, 'flour', 30, 'KG'),
-(5, 'herbs', 5, 'KG'),
-(6, 'cheese', 25, 'KG'),
-(7, 'tomato', 24, 'KG'),
-(8, 'ham', 15, 'KG'),
-(9, 'sausage', 15, 'KG'),
-(10, 'pasta', 50, 'KG'),
-(11, 'beef', 30, 'KG'),
-(12, 'chicken', 20, 'KG'),
-(13, 'vegetable', 20, 'KG'),
-(14, 'pork chop', 15, 'KG'),
-(15, 'brad crumps', 10, 'KG'),
-(16, 'egg', 120, 'piece');
+INSERT INTO `ingredients` (`ingredient_id`, `ingredient_name`, `quantity`, `ingredient_type`, `Locked_Quantity`) VALUES
+(1, 'potatoes', 50, 'KG', 0),
+(2, 'oil', 20, 'L', 0),
+(3, 'salt', 10, 'KG', 0),
+(4, 'flour', 30, 'KG', 0),
+(5, 'herbs', 5, 'KG', 0),
+(6, 'cheese', 25, 'KG', 0),
+(7, 'tomatoes', 24, 'KG', 0),
+(8, 'ham', 15, 'KG', 0),
+(9, 'sausage', 15, 'KG', 0),
+(10, 'pasta', 50, 'KG', 0),
+(11, 'beef', 30, 'KG', 0),
+(12, 'chicken', 20, 'KG', 0),
+(13, 'vegetable', 20, 'KG', 0),
+(14, 'pork chop', 15, 'KG', 0),
+(15, 'bread crumps', 10, 'KG', 0),
+(16, 'eggs', 120, 'PC', 0);
 
 -- --------------------------------------------------------
 
@@ -91,11 +92,11 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`menu_id`, `position_name`, `required_ingredients`, `quantity`, `course_cost`) VALUES
-(1, 'Frytki', 'ziemniaki,olej,sól', '1,1,1', 8),
-(2, 'Pizza', 'mąka,zioła,ser,pomidor,szynka,kielbasa', '1,1,3,2,2,1', 30),
-(3, 'Sphagetti', 'makaron,pomidory,ser,zioła,wołowina', '1,3,2,2,1', 27),
-(4, 'Rosół', 'kurczak,warzywa,zioła,sól', '2,1,2,1', 18),
-(5, 'Schabowy z Ziemniakami', 'ziemniaki,schab,bułka tarta,zioła,jajko,', '1,1,1,1,2', 34);
+(1, 'Fries', 'potatoes,oil,salt\r\n', '1,1,1', 8),
+(2, 'Pizza', 'flour,herbs,cheese,tomatoes,ham,sausage', '1,1,3,2,2,1', 30),
+(3, 'Sphagetti', 'pasta,tomatoes,cheese,herbs,beef', '1,3,2,2,1', 27),
+(4, 'Chicken Broth', 'chicken,vegetables,herbs,salt', '2,1,2,1', 18),
+(5, 'Pork Chop with Potatoes', 'potatoes,pork,bread crumps,herbs,eggs', '1,1,1,1,2', 34);
 
 -- --------------------------------------------------------
 
@@ -110,6 +111,24 @@ CREATE TABLE `orders` (
   `quantity` text NOT NULL COMMENT 'ex. quan1, quan2, quan3, ...',
   `order_status` varchar(255) NOT NULL DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `table_id`, `positions`, `quantity`, `order_status`) VALUES
+(3, 1, '3,4', '2,1', 'Active'),
+(4, 2, '1,3,4', '1,2,3', 'Active'),
+(5, 3, '5,1,3', '2,4,1', 'Active'),
+(6, 1, '1,2', '1,4', 'Active'),
+(7, 2, '2', '1', 'Active'),
+(8, 7, '5,2', '3,1', 'Active'),
+(9, 4, '2,4', '3,5', 'Active'),
+(10, 4, '2,4', '3,5', 'Active'),
+(11, 1, '1,4', '2,2', 'Active'),
+(12, 1, '1,4', '2,2', 'Active'),
+(13, 4, '2,4', '3,5', 'Active'),
+(14, 2, '2,4', '3,2', 'Active');
 
 -- --------------------------------------------------------
 
@@ -190,7 +209,7 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `transactions`

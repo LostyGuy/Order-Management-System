@@ -1,12 +1,13 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float
 from app.database import Base
 
 class ingredients(Base):
     __tablename__ = "ingredients"
     ingredient_id = Column(Integer, primary_key=True, index=True)
     ingredient_name = Column(String(50), index=True)
-    quantity = Column(Integer, index=True)
+    quantity = Column(Float, index=True)
     ingredient_type = Column(String(50), index=True)
+    locked_quantity = Column(Float, index=True)
 
 class loyalty_cards(Base):
     __tablename__ = "loyalty_cards"
@@ -20,6 +21,7 @@ class menu(Base):
     __tablename__ = "menu"
     menu_id = Column(Integer, primary_key=True, index=True)
     position_name = Column(String(50), index=True)
+    quantity = Column(Integer, index=True)
     required_ingredients = Column(String(200), index=True)  # Assuming this is a comma-separated string
     course_cost = Column(Integer, index=True)
 
