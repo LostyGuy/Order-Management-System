@@ -21,8 +21,6 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 
 - **Orders** – Order headers with customer and timestamp
 
-- **Order_Items** – Order details: which items and how many 
-
 - **Ingredients** – Tracks ingredients in stock
 
 - **Recipe** – Maps menu items to required ingredients
@@ -38,6 +36,7 @@ This project simulates a real-world restaurant system using ORM/SQL. It includes
 - `sp_GenerateSalesReport(date)` – Shows sales data for a given day
 
 ### Triggers
+<!-- \/ DONE -->
 - `trg_deduct_stock` – Automatically deducts ingredients when an item is added to an order
 
 ### Views
