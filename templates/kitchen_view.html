@@ -30,32 +30,36 @@
     margin: 0;
     justify-content: center;
     text-align: center;
-    
 
 }
 
 #go_back {
+
     display: block;
     position: absolute;
     bottom: 0;
     margin: 10px;
+
+}
+
+#rm {
+
+    display: None;
+
 }
 
 </style>
 <script language="javascript">
 
-function set_status(id) {
-    
-}
-function rm_board(id) {
-
-}
-function inc(iter) {
-    if (iter == 0) {
-        var iter = 0;
-    } else {
-        return iter++;
-    }
+function set_status(or_id) {
+    // Order State: Ready
+    fetch(`/complete/${or_id}`, {
+        method: "POST",
+    })
+    .then(response => {
+            var box = document.getElementById(or_id + "b");
+            box.style.display = "none"; // Hide the completed order
+    })
 }
 
 </script>
@@ -68,14 +72,11 @@ function inc(iter) {
                 <h1>Order number: {{item[0]}}</h1>
                 {% for dish_list in item[1:] %}
                     {% for dish in dish_list.keys() %}
-                    
-                    <p> {{dish}} || {{dish_list.get(dish)}} </p>
+                        <p> {{dish}} || {{dish_list.get(dish)}} </p>
                     {% endfor %}
-
                 {% endfor %}
                 <br>
-                <button onclick="set_status({{item[0]}})">Complete</button>
-                <button onclick="rm_from_board({{item[0]}})">Remove from board</button>
+                <button id="complete" onclick="set_status({{item[0]}})">Complete</button>
             </section>
         {% endfor %}
     </section>

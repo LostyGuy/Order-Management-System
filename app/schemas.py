@@ -30,6 +30,5 @@ class Loyalty_CardsBase(BaseModel):
 class TransactionsBase(BaseModel):
     transaction_id: int
     order_id: int
-    course_names: list[str]
     guest_id: int
     total_cost: float

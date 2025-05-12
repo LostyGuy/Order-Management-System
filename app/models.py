@@ -32,6 +32,7 @@ class orders(Base):
     positions = Column(String(200), index=True)  # Assuming this is a comma-separated string
     quantity = Column(String(200), index=True)  # Assuming this is a comma-separated string
     order_status = Column(String(50), index=True)
+    created_at = Column(String(50), index=True)  # Assuming this is a date string
 
 class transactions(Base):
     __tablename__ = "transactions"

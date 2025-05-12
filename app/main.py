@@ -7,6 +7,7 @@ from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
 from app import schemas, models, database
 import logging as log
 import time as t
+from collections import Counter
 
 log.basicConfig(level='INFO',
                 filemode='a',
@@ -21,9 +22,18 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Main Page
-### TODO ---> Text Wrap || Report - View || Finished Transactions - View Endpoint
+### TODO ---> Text Wrap || Report - View
+### Raport Logic
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)):
+    daily_sales = db.query(models.orders.positions).filter(models.orders.order_status == "Complete").filter(models.orders.created_at == t.localtime().tm_mday).limit(10).all()
+    d_s_report = []
+    for summary in daily_sales:
+        summary.positions = summary.positions.split(",")
+        d_s_report.append(summary.positions)
+    d_s_report = Counter(d_s_report)
+    log.info(f"Daily Sales Report: {d_s_report}")
+        
     return templates.TemplateResponse("default.html", {"request": request})
 
 # Order Page - Add Positions Box
@@ -42,8 +52,9 @@ async def Weiter_Interface(request: Request, db: Session = Depends(database.get_
     menu = db.query(models.menu).filter(models.menu.position_name != None).all()
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
-# Order Page - Get Data
+# Order Page - Get Data -> Make Transaction
 ### TODO ---> Make a func that will restore locked_ingredients to "0" in every cell when the next day come
+### Transaction makings
 @app.post("/weiter_p", response_class=HTMLResponse)
 async def place_order(request: Request, db: Session = Depends(database.get_db)):
     menu = db.query(models.menu).filter(models.menu.position_name != None).all()
@@ -122,10 +133,23 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     Ingredient_Trigger(form_data_pos, form_data_qti,db)
     db.refresh(placed_order)
     log.info(f"Placed order: {placed_order}")
+    ### TODO ---> Transaction system
+    def start_transaction(db: Session = Depends(database.get_db)) -> None:
+        transaction = models.transaction(
+            order_id = db.query(models.ordersorder_id).filter(models.orders.positions == ...).all(),
+            guest_id = ...,
+            total_cost = ...,
+            
+        )
+        
+        db.add(transaction)
+        db.commit()
+        db.refresh(transaction)
+        log.info(f"Transaction ID: {transaction.transaction_id}")
+    
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
 # Kitchen Page - View Orders
-### TODO ---> Complete the Button Functionality
 @app.get("/k_v", response_class=HTMLResponse)
 async def kv(request: Request, db: Session = Depends(database.get_db)):
     # log.info("________________________________________")
@@ -162,7 +186,18 @@ async def kv(request: Request, db: Session = Depends(database.get_db)):
         
     return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes, "id": 0})
 
-@app.post("/k_v_b", response_class=HTMLResponse)
-async def rm_comp_order(request: Request, db: Session = Depends(database.get_db)):
-    
+# Kitchen Page - Remove Order
+@app.post("/complete/{or_id}", response_class=HTMLResponse)
+async def rm_comp_order(or_id: int, request: Request, db: Session = Depends(database.get_db)):
+    remove = (db.query(models.orders).filter(models.orders.order_id == or_id).first())
+    remove.order_status = "Ready"
+    db.commit()
+    db.refresh()
+    log.info(f"Order ID: {or_id} is ready")
     return RedirectResponse(url="/k_v")
+
+# Transaction Page - View Transactions
+### TODO ---> Add All
+@app.get("/transactions", response_class=HTMLResponse)
+async def transactions(request: Request, db: Session = Depends(database.get_db)):
+    pass
