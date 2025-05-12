@@ -44,8 +44,12 @@
 </style>
 <script language="javascript">
 
-function set_status() {}
-function rm_board() {}
+function set_status(id) {
+    
+}
+function rm_board(id) {
+
+}
 function inc(iter) {
     if (iter == 0) {
         var iter = 0;
@@ -70,8 +74,8 @@ function inc(iter) {
 
                 {% endfor %}
                 <br>
-                <button onclick="set_status()">Complete</button>
-                <button onclick="rm_board()">Remove from board</button>
+                <button onclick="set_status({{item[0]}})">Complete</button>
+                <button onclick="rm_from_board({{item[0]}})">Remove from board</button>
             </section>
         {% endfor %}
     </section>

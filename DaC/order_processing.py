@@ -25,6 +25,7 @@ with Diagram("Order Processing", show=False, filename="RDME_files/order_processi
             db_in = Backbone("Entry To The Database")
             kv = Notifications("New Order In Kitchen Display")
             or_ga = Alarm("Order Giveaway")
+            ch_state = ELB("Change Order State")
             db_reg = Tagging("Locked Ingredients")
             
         with Cluster("Final Transaction"):
@@ -35,6 +36,7 @@ with Diagram("Order Processing", show=False, filename="RDME_files/order_processi
         Wto >> db_in
         db_in >> kv
         kv >> or_ga
+        or_ga >> ch_state
         db_in >> db_reg
 
         or_ga >> order_sum

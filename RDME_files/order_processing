@@ -1,0 +1,34 @@
+digraph "Order Processing" {
+	graph [fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="Order Processing" nodesep=0.60 pad=2.0 rankdir=LR ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname=bold fontsize=10 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	"2540087fe68043d581a65723b05ed90d" -> "56b0795bb3ee4421ba299ccd383971df" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"56b0795bb3ee4421ba299ccd383971df" -> "9288bae3211b4d798643ff0a2d361297" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"9288bae3211b4d798643ff0a2d361297" -> "5b46984adfb7479ab1fe63fcf553ea9d" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5b46984adfb7479ab1fe63fcf553ea9d" -> "9603adee7b664fa8b156720a6cbcc1e0" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"56b0795bb3ee4421ba299ccd383971df" -> "91d679006e32424cb3865357dcf3a9f7" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5b46984adfb7479ab1fe63fcf553ea9d" -> "9bc6086948034d38bd17d73154269fb1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"9bc6086948034d38bd17d73154269fb1" -> cb17979e17cb4e1ca56d683243a9c30f [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	cb17979e17cb4e1ca56d683243a9c30f -> "0877413a0b3b45029b28cc79173fd498" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	subgraph cluster_ {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		subgraph "cluster_Data Input" {
+			graph [bgcolor="#EBF3E7" fontname="Sans-Serif" fontsize=12 label="Data Input" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+			"2540087fe68043d581a65723b05ed90d" [label="Weiter Takes Order" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/governance\audit.png" shape=none]
+		}
+		subgraph "cluster_Order Handling" {
+			graph [bgcolor="#EBF3E7" fontname="Sans-Serif" fontsize=12 label="Order Handling" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+			"56b0795bb3ee4421ba299ccd383971df" [label="Entry To The Database" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/connectivity\backbone.png" shape=none]
+			"9288bae3211b4d798643ff0a2d361297" [label="New Order In Kitchen Display" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/monitoring\notifications.png" shape=none]
+			"5b46984adfb7479ab1fe63fcf553ea9d" [label="Order Giveaway" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/monitoring\alarm.png" shape=none]
+			"9603adee7b664fa8b156720a6cbcc1e0" [label="Change Order State" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/aws/network\elastic-load-balancing.png" shape=none]
+			"91d679006e32424cb3865357dcf3a9f7" [label="Locked Ingredients" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/governance\tagging.png" shape=none]
+		}
+		subgraph "cluster_Final Transaction" {
+			graph [bgcolor="#EBF3E7" fontname="Sans-Serif" fontsize=12 label="Final Transaction" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+			"9bc6086948034d38bd17d73154269fb1" [label="Generate Order Summary" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/storage\buckets.png" shape=none]
+			cb17979e17cb4e1ca56d683243a9c30f [label="Optional Discount" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/security\id-access.png" shape=none]
+			"0877413a0b3b45029b28cc79173fd498" [label="Set status to 'Completed'" height=1.9 image="c:\Git_Proj\Order-Management-System\.venv\Lib\site-packages\resources/oci/storage\data-transfer.png" shape=none]
+		}
+	}
+}

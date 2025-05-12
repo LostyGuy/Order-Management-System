@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, relationship
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
 from app import schemas, models, database
@@ -161,3 +161,8 @@ async def kv(request: Request, db: Session = Depends(database.get_db)):
         # log.info(F"list_of_dishes: {list_of_dishes}")
         
     return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes, "id": 0})
+
+@app.post("/k_v_b", response_class=HTMLResponse)
+async def rm_comp_order(request: Request, db: Session = Depends(database.get_db)):
+    
+    return RedirectResponse(url="/k_v")
