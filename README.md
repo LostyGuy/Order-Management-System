@@ -71,9 +71,9 @@ https://github.com/user-attachments/assets/4b638861-22bb-4f1b-9ebf-ab671159b4e8
 ## Tech Stack
 
 - SQL/ORM: MySQL/SQLAlchemy
-- Backend: FastAPI / Python
+- Backend: FastAPI/Python
 - Frontend: Simple HTML/CSS/JS
-- Visualization: Graphviz
+- Visualization: Graphviz/Power BI
 
 ---
 
