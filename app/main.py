@@ -22,7 +22,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Main Page
-### TODO ---> Text Wrap || Report - View
+# TODO ---> Text Wrap || Report - View
 ### Raport Logic
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)):
@@ -47,9 +47,10 @@ async def add_dish(request: Request, db: Session = Depends(database.get_db)):
     return templates.TemplateResponse("add_dish.html", {"request": request, "html_snippet": html_snippet})
 
 # Order Page
+# TODO ---> New handle logic will be needed
 @app.get("/weiter", response_class=HTMLResponse)
 async def Weiter_Interface(request: Request, db: Session = Depends(database.get_db)):
-    menu = db.query(models.menu).filter(models.menu.position_name != None).all()
+    menu = db.query(...).all()
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
 # Order Page - Get Data -> Make Transaction
@@ -65,38 +66,38 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     form_data_ti = form_data.get("table_number")
     log.info(f"Table ID: {form_data_ti}")
     
+    ### TODO ---> create main order
+    
     # ---> combined positions and quantity <---
-    def get_pos_qti(form_data) -> list[int]:
-        log.info("________________________________________")
-        form_data_pos: list[int] = []
-        form_data_qti: list[int] = []
-        pos_id: int = 1
-        qti_id: int = 1
-        for i in form_data.keys():
-            log.info(f"Key: {i}")
-            log.info(f"Value: {form_data.get(i)}")
+    # def get_pos_qti(form_data) -> list[int]:
+    #     log.info("________________________________________")
+    #     form_data_pos: list[int] = []
+    #     form_data_qti: list[int] = []
+    #     pos_id: int = 1
+    #     qti_id: int = 1
+    #     for i in form_data.keys():
+    #         log.info(f"Key: {i}")
+    #         log.info(f"Value: {form_data.get(i)}")
             
-            if i.endswith('d'):
-                form_data_pos.append(form_data.get(i))
-                pos_id += 1
-            elif i.endswith('q'):
-                form_data_qti.append(form_data.get(i))
-                qti_id += 1
-            elif i.endswith('number'):
-                pass
-            else:
-                break
-        return form_data_pos, form_data_qti
+    #         if i.endswith('d'):
+    #             form_data_pos.append(form_data.get(i))
+    #             pos_id += 1
+    #         elif i.endswith('q'):
+    #             form_data_qti.append(form_data.get(i))
+    #             qti_id += 1
+    #         elif i.endswith('number'):
+    #             pass
+    #         else:
+    #             break
+    #     return form_data_pos, form_data_qti
+
+    # form_data_pos, form_data_qti = get_pos_qti(form_data)
     
-    form_data_pos, form_data_qti = get_pos_qti(form_data)
+    # log.info(f"Form data positions: {form_data_pos, form_data_qti}")
     
-    log.info(f"Form data positions: {form_data_pos, form_data_qti}")
+    ### TODO ---> loop for every pos and add sub order for main order
     
     placed_order = models.orders(
-        table_id=form_data_ti,
-        positions=",".join(form_data_pos),
-        quantity=",".join(form_data_qti),
-        order_status="Active"
     )
     db.add(placed_order)
     db.commit()

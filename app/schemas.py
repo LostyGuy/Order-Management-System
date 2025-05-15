@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+### TODO ---> refactor me with new db
+
 class OrdersBase(BaseModel):
     order_id: int
     table_id: int
