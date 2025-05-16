@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, relationship
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime, func
 from app import schemas, models, database
 import logging as log
 import time as t
@@ -25,15 +25,7 @@ templates = Jinja2Templates(directory="templates")
 # TODO ---> Text Wrap || Report - View
 ### Raport Logic
 @app.get("/", response_class=HTMLResponse)
-async def read_sales(request: Request, db: Session = Depends(database.get_db)):
-    daily_sales = db.query(models.orders.positions).filter(models.orders.order_status == "Complete").filter(models.orders.created_at == t.localtime().tm_mday).limit(10).all()
-    d_s_report = []
-    for summary in daily_sales:
-        summary.positions = summary.positions.split(",")
-        d_s_report.append(summary.positions)
-    d_s_report = Counter(d_s_report)
-    log.info(f"Daily Sales Report: {d_s_report}")
-        
+async def read_sales(request: Request, db: Session = Depends(database.get_db)): 
     return templates.TemplateResponse("default.html", {"request": request})
 
 # Order Page - Add Positions Box
@@ -50,7 +42,7 @@ async def add_dish(request: Request, db: Session = Depends(database.get_db)):
 # TODO ---> New handle logic will be needed
 @app.get("/weiter", response_class=HTMLResponse)
 async def Weiter_Interface(request: Request, db: Session = Depends(database.get_db)):
-    menu = db.query(...).all()
+    menu = db.query(models.menu).all()
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
 # Order Page - Get Data -> Make Transaction
@@ -58,95 +50,106 @@ async def Weiter_Interface(request: Request, db: Session = Depends(database.get_
 ### Transaction makings
 @app.post("/weiter_p", response_class=HTMLResponse)
 async def place_order(request: Request, db: Session = Depends(database.get_db)):
-    menu = db.query(models.menu).filter(models.menu.position_name != None).all()
+    menu = db.query(models.menu).all()
     form_data = await request.form()
     log.info(f"Form data: {form_data}")
     
     # table_id
     form_data_ti = form_data.get("table_number")
     log.info(f"Table ID: {form_data_ti}")
-    
-    ### TODO ---> create main order
-    
-    # ---> combined positions and quantity <---
-    # def get_pos_qti(form_data) -> list[int]:
-    #     log.info("________________________________________")
-    #     form_data_pos: list[int] = []
-    #     form_data_qti: list[int] = []
-    #     pos_id: int = 1
-    #     qti_id: int = 1
-    #     for i in form_data.keys():
-    #         log.info(f"Key: {i}")
-    #         log.info(f"Value: {form_data.get(i)}")
-            
-    #         if i.endswith('d'):
-    #             form_data_pos.append(form_data.get(i))
-    #             pos_id += 1
-    #         elif i.endswith('q'):
-    #             form_data_qti.append(form_data.get(i))
-    #             qti_id += 1
-    #         elif i.endswith('number'):
-    #             pass
-    #         else:
-    #             break
-    #     return form_data_pos, form_data_qti
 
-    # form_data_pos, form_data_qti = get_pos_qti(form_data)
+    def main_order() -> None:
+        def disp_id() -> int:
+            id: int = db.query(func.max(models.orders.display_id)).scalar()
+            return id + 1
+        core = models.orders(
+            display_id = disp_id()
+        )
+        # db.add(core)
+        # db.commit()
+        # db.refresh(core)
+        log.info(f"Main order ID: {db.query(models.orders.order_id).filter(models.orders.display_id == core.display_id).order_by(models.orders.created_at.desc()).scalar()}")
+
+    # ---> combined positions and quantity <---
+    def get_pos_qti(form_data) -> list[int]:
+        log.info("________________________________________")
+        form_data_pos: list[int] = []
+        form_data_qti: list[int] = []
+        pos_id: int = 1
+        qti_id: int = 1
+        for i in form_data.keys():
+            # log.info(f"Key: {i}")
+            # log.info(f"Value: {form_data.get(i)}")
+            
+            if i.endswith('d'):
+                form_data_pos.append(form_data.get(i))
+                pos_id += 1
+            elif i.endswith('q'):
+                form_data_qti.append(form_data.get(i))
+                qti_id += 1
+            elif i.endswith('number'):
+                pass
+            else:
+                break
+        return form_data_pos, form_data_qti
+
+    form_data_pos, form_data_qti = get_pos_qti(form_data)
     
-    # log.info(f"Form data positions: {form_data_pos, form_data_qti}")
+    log.info(f"Form data positions: {form_data_pos, form_data_qti}")
     
     ### TODO ---> loop for every pos and add sub order for main order
+    def sub_orders(form_data_pos) -> None:
+        for order in form_data_pos:
+
+            pass
+        pass
+
     
-    placed_order = models.orders(
-    )
-    db.add(placed_order)
-    db.commit()
-    
-    def Ingredient_Trigger(form_data_pos, form_data_qti, db: Session = Depends(database.get_db)) -> None:
-        for dish in form_data_pos:
-            # ex. fries
-            qti: float = float(form_data_qti[form_data_pos.index(dish)])
-            # each ingredient of fries
-            for ingredients in db.query(models.menu.required_ingredients).filter(models.menu.menu_id == dish).all():
-                # ex. potatoes, oil, salt
-                ingredients: list[str] = ingredients[0].split(",")
-                qti_ingredient: list[float] = list(map(float, ((db.query(models.menu.quantity).filter(models.menu.menu_id == dish).all())[0])[0].split(",")))
-                log.info(f"Ingredient separated: {ingredients}, Quantity: {qti_ingredient}")
+    # def Ingredient_Trigger(form_data_pos, form_data_qti, db: Session = Depends(database.get_db)) -> None:
+    #     for dish in form_data_pos:
+    #         # ex. fries
+    #         qti: float = float(form_data_qti[form_data_pos.index(dish)])
+    #         # each ingredient of fries
+    #         for ingredients in db.query(models.menu.required_ingredients).filter(models.menu.menu_id == dish).all():
+    #             # ex. potatoes, oil, salt
+    #             ingredients: list[str] = ingredients[0].split(",")
+    #             qti_ingredient: list[float] = list(map(float, ((db.query(models.menu.quantity).filter(models.menu.menu_id == dish).all())[0])[0].split(",")))
+    #             log.info(f"Ingredient separated: {ingredients}, Quantity: {qti_ingredient}")
 
-                for ingredient in ingredients:
-                    # get the quantity of each ingredient and multiply
-                    ingredient_index: int = ingredients.index(ingredient)
-                    ingredient_quantity: float = qti * qti_ingredient[ingredient_index]
-                    log.info(f"Ingridient Index: {ingredient_index}, Ingredient quantity: {ingredient_quantity}, Name: {ingredient}")
+    #             for ingredient in ingredients:
+    #                 # get the quantity of each ingredient and multiply
+    #                 ingredient_index: int = ingredients.index(ingredient)
+    #                 ingredient_quantity: float = qti * qti_ingredient[ingredient_index]
+    #                 log.info(f"Ingridient Index: {ingredient_index}, Ingredient quantity: {ingredient_quantity}, Name: {ingredient}")
                     
-                    current_locked_quantity = db.query(models.ingredients.locked_quantity).filter(models.ingredients.ingredient_name == ingredient).all()
-                    log.info(f"Current locked quantity: {current_locked_quantity}")
+    #                 current_locked_quantity = db.query(models.ingredients.locked_quantity).filter(models.ingredients.ingredient_name == ingredient).all()
+    #                 log.info(f"Current locked quantity: {current_locked_quantity}")
                     
-                    current_ingredient_quantity = db.query(models.ingredients.quantity).filter(models.ingredients.ingredient_name == ingredient).all()
-                    log.info(f"Current ingredient quantity: {current_ingredient_quantity}")
+    #                 current_ingredient_quantity = db.query(models.ingredients.quantity).filter(models.ingredients.ingredient_name == ingredient).all()
+    #                 log.info(f"Current ingredient quantity: {current_ingredient_quantity}")
 
-                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"locked_quantity": current_locked_quantity[0][0] + ingredient_quantity})
+    #                 db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"locked_quantity": current_locked_quantity[0][0] + ingredient_quantity})
                     
-                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"quantity": current_ingredient_quantity[0][0] - ingredient_quantity})
+    #                 db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"quantity": current_ingredient_quantity[0][0] - ingredient_quantity})
                     
-                    db.commit()
+    #                 db.commit()
 
-    Ingredient_Trigger(form_data_pos, form_data_qti,db)
-    db.refresh(placed_order)
-    log.info(f"Placed order: {placed_order}")
-    ### TODO ---> Transaction system
-    def start_transaction(db: Session = Depends(database.get_db)) -> None:
-        transaction = models.transaction(
-            order_id = db.query(models.ordersorder_id).filter(models.orders.positions == ...).all(),
-            guest_id = ...,
-            total_cost = ...,
+    # Ingredient_Trigger(form_data_pos, form_data_qti,db)
+    # db.refresh(placed_order)
+    # log.info(f"Placed order: {placed_order}")
+    # ### TODO ---> Transaction system
+    # def start_transaction(db: Session = Depends(database.get_db)) -> None:
+    #     transaction = models.transaction(
+    #         order_id = db.query(models.ordersorder_id).filter(models.orders.positions == ...).all(),
+    #         guest_id = ...,
+    #         total_cost = ...,
             
-        )
+    #     )
         
-        db.add(transaction)
-        db.commit()
-        db.refresh(transaction)
-        log.info(f"Transaction ID: {transaction.transaction_id}")
+    #     db.add(transaction)
+    #     db.commit()
+    #     db.refresh(transaction)
+    #     log.info(f"Transaction ID: {transaction.transaction_id}")
     
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
