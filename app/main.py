@@ -67,11 +67,12 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
             else:
                 return (id + 1) ### TODO ---> Find how the data looks like when this condition is not met
         core = models.orders(
-            display_id = disp_id()
+            display_id = disp_id(),
+            order_status = 'active'
         )
-        # db.add(core)
-        # db.commit()
-        # db.refresh(core)
+        db.add(core)
+        db.commit()
+        db.refresh(core)
         main_order_id: int = db.query(models.orders.order_id).filter(models.orders.display_id == core.display_id).order_by(models.orders.created_at.desc()).scalar()
         log.info(f"Main order ID: {main_order_id}")
         return main_order_id
@@ -104,11 +105,11 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
     log.info(f"Form data positions: {form_data_pos, form_data_qti}")
 
     ### TODO ---> loop for every pos and add sub order for main order
-    def sub_orders(form_data_pos, form_data_qti,main_order_id) -> None:
-        for order in form_data_pos:
+    def sub_orders(main_order_id, dish, dish_qti) -> None:
+        for order in dish:
             log.info(f"sub_order: {order}")
-            order_index:int = form_data_pos.index(order)
-            qti_of_sub_order:int = form_data_qti[order_index]
+            order_index:int = dish.index(order)
+            qti_of_sub_order:int = dish_qti[order_index]
             sub_order_db = models.ordered_dishes(
                 order_id = main_order_id,
                 dish_id = order,
@@ -117,38 +118,31 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
             db.add(sub_order_db)
             db.commit()
 
-    def Ingredient_Trigger(form_data_pos, form_data_qti) -> None:
-        for dish in form_data_pos:
-            # ex. fries
-            qti: float = float(form_data_qti[form_data_pos.index(dish)])
-            # each ingredient of fries
-            for ingredients in db.query(models.menu.required_ingredients).filter(models.menu.menu_id == dish).all():
-                # ex. potatoes, oil, salt
-                ingredients: list[str] = ingredients[0].split(",")
-                qti_ingredient: list[float] = list(map(float, ((db.query(models.menu.quantity).filter(models.menu.menu_id == dish).all())[0])[0].split(",")))
-                log.info(f"Ingredient separated: {ingredients}, Quantity: {qti_ingredient}")
+    def Ingredient_Trigger(main_order_id) -> None:
+        # Get main order id and find all corecponding sub_orders <--- DONE
+        # Iterate Through all of them <--- DONE
+        # For every dish find how many of them guests ordered <--- DONE
+        # Get how much of ingredients is required and multiply by the quantity of dishes <--- DONE
+        # Substract from stored inventory <--- DONE
+        # Add substracted value to locked ingredients <--- DONE
 
-                for ingredient in ingredients:
-                    # get the quantity of each ingredient and multiply
-                    ingredient_index: int = ingredients.index(ingredient)
-                    ingredient_quantity: float = qti * qti_ingredient[ingredient_index]
-                    log.info(f"Ingridient Index: {ingredient_index}, Ingredient quantity: {ingredient_quantity}, Name: {ingredient}")
-                    
-                    current_locked_quantity = db.query(models.ingredients.locked_quantity).filter(models.ingredients.ingredient_name == ingredient).all()
-                    log.info(f"Current locked quantity: {current_locked_quantity}")
-                    
-                    current_ingredient_quantity = db.query(models.ingredients.quantity).filter(models.ingredients.ingredient_name == ingredient).all()
-                    log.info(f"Current ingredient quantity: {current_ingredient_quantity}")
-
-                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"locked_quantity": current_locked_quantity[0][0] + ingredient_quantity})
-                    
-                    db.query(models.ingredients).filter(models.ingredients.ingredient_name == ingredient).update({"quantity": current_ingredient_quantity[0][0] - ingredient_quantity})
-                    
-                    db.commit()
+        list_of_sub_orders: list[int] = db.query(models.ordered_dishes).filter(models.ordered_dishes.order_id == main_order_id).all()
+        for sub_order in list_of_sub_orders:
+            log.info(f"Trigger sub_order: {sub_order}")
+            dish_qti:int = sub_order.quantity
+            ### Dish -> Ingredients
+            list_of_ingredients: list[int] = db.query(models.dish_ingredients).filter(models.dish_ingredients.dish_id == sub_order.dish_id).all()
+            for ingredient in list_of_ingredients:
+                req_qti:float = ingredient.quantity_required
+                ingredient_id = ingredient.ingredient_id
+                stock = db.query(models.ingredients).filter(models.ingredients.ingredient_id == ingredient_id).first()
+                stock.quantity = stock.quantity - req_qti
+                stock.locked_quantity = stock.locked_quantity + req_qti
+                db.commit()
 
     main_order_id = main_order()
-    sub_orders(form_data_pos, form_data_qti, main_order_id)
-    # Ingredient_Trigger()
+    sub_orders(main_order_id, dish = form_data_pos, dish_qti = form_data_qti)
+    Ingredient_Trigger(main_order_id)
 
     return templates.TemplateResponse("add_order.html", {"request": request, "menu": menu})
 
@@ -156,38 +150,26 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
 @app.get("/k_v", response_class=HTMLResponse)
 async def kv(request: Request, db: Session = Depends(database.get_db)):
     # log.info("________________________________________")
-    orders_from_db = db.query(models.orders).filter(models.orders.order_status == "Active").all()
-
-    temp_orders: dict[int,list[str, str]] = {}
-    list_of_dishes: dict[int, dict[str, str]] = {}
-
-    for order in orders_from_db: # Single Order
-        # log.info(f"order.positions: {order.positions}, order.quantity: {order.quantity}")
-        
-        order.positions = order.positions.split(",") # More readable
-        order.quantity = order.quantity.split(",")
-
-        # replace number with name
-        op_iteration = 0
-        for operation in order.positions:
-            menu = db.query(models.menu.position_name).filter(models.menu.menu_id == operation).all()
-            order.positions[op_iteration] = menu[0][0]
-            op_iteration += 1
-        
-        temp_orders[order.order_id] = {
-            "positions": order.positions,
-            "quantity": order.quantity
-        }
-        # log.info(f"temp_orders: {temp_orders[order.order_id]}")
-        list_of_dishes[order.order_id] = {}
-        for i in range(len(temp_orders[order.order_id]["positions"])):
+    orders_from_db = db.query(models.orders).filter(models.orders.order_status == "active").all()
+    list_of_dishes_with_qti: dict[int, dict[str:int]] = {}
+    log.info(f"orders: {orders_from_db}")
+    for order in orders_from_db:
+        list_of_dishes_with_qti[order.order_id] = {}
+        log.info(f"order from list: {order.order_id}")
+        dishes_in_order: list[int] = db.query(models.ordered_dishes).filter(models.ordered_dishes.order_id == order.order_id).all()
+        log.info(f"dishes_in_order: {dishes_in_order}")
+        for spec in dishes_in_order:
             
-            list_of_dishes[order.order_id].update({temp_orders[order.order_id]["positions"][i] : temp_orders[order.order_id]["quantity"][i]})
-            
-            # log.info(f"list_of_dishes: {list_of_dishes[order.order_id]}")
-        # log.info(F"list_of_dishes: {list_of_dishes}")
-        
-    return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes, "id": 0})
+            dish_id:int = spec.dish_id
+            qti:int = spec.quantity
+            log.info(f"Dish ID: {dish_id}, Quantity: {qti}")
+            dish_name:str = db.query(models.menu.dish_name).filter(models.menu.dish_id == dish_id).scalar()
+            log.info(f"Dish Name: {dish_name}")
+            # It overwrites dishes not add them!
+            list_of_dishes_with_qti[order.order_id][dish_name] = qti
+        pass
+    log.info(f"Full list to pass: {list_of_dishes_with_qti}")
+    return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes_with_qti, "id": 0})
 
 # Kitchen Page - Remove Order
 @app.post("/complete/{or_id}", response_class=HTMLResponse)

@@ -11,6 +11,14 @@ class ingredients(Base):
     unit = Column(String(50), index=True)
     locked_quantity = Column(Float, index=True)
 
+class dish_ingredients(Base):
+    __tablename__ = "dish_ingredients"
+    id = Column(Integer, primary_key=True, index=True)
+    dish_id = Column(Integer, index=True)
+    ingredient_id = Column(Integer, index=True)
+    quantity_required = Column(Float, index=True)
+
+
 class loyalty_cards(Base):
     __tablename__ = "loyalty_cards"
     guest_id = Column(Integer, primary_key=True, index=True)
@@ -28,7 +36,6 @@ class menu(Base):
 class orders(Base):
     __tablename__ = "orders"
     order_id = Column(Integer, primary_key=True, index=True)
-    #table_id = Column(Integer, index=True)
     display_id = Column(Integer, index=True)
     order_status = Column(String(50), index=True)
     created_at = Column(String(50), index=True)  # Assuming this is a date string
