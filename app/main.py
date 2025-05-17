@@ -19,13 +19,14 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=database.engine)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/app/BI_reports", StaticFiles(directory="app/BI_reports"), name="bi_reports")
 templates = Jinja2Templates(directory="templates")
 
 ### TODO ---> Loyalty_card system for discounts and Transactions after the order is placed
 
 # Main Page
 ### TODO ---> Text Wrap || Report - View
-### Raport Logic
+### Raport Logic - Power BI
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)): 
     return templates.TemplateResponse("default.html", {"request": request})
@@ -65,7 +66,7 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
             if id == "None":
                 return 1
             else:
-                return (id + 1) ### TODO ---> Find how the data looks like when this condition is not met
+                return (id + 1)
         core = models.orders(
             display_id = disp_id(),
             order_status = 'active'
@@ -85,9 +86,6 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
         pos_id: int = 1
         qti_id: int = 1
         for i in form_data.keys():
-            # log.info(f"Key: {i}")
-            # log.info(f"Value: {form_data.get(i)}")
-            
             if i.endswith('d'):
                 form_data_pos.append(form_data.get(i))
                 pos_id += 1
@@ -119,13 +117,6 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
             db.commit()
 
     def Ingredient_Trigger(main_order_id) -> None:
-        # Get main order id and find all corecponding sub_orders <--- DONE
-        # Iterate Through all of them <--- DONE
-        # For every dish find how many of them guests ordered <--- DONE
-        # Get how much of ingredients is required and multiply by the quantity of dishes <--- DONE
-        # Substract from stored inventory <--- DONE
-        # Add substracted value to locked ingredients <--- DONE
-
         list_of_sub_orders: list[int] = db.query(models.ordered_dishes).filter(models.ordered_dishes.order_id == main_order_id).all()
         for sub_order in list_of_sub_orders:
             log.info(f"Trigger sub_order: {sub_order}")
@@ -149,7 +140,6 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
 # Kitchen Page - View Orders
 @app.get("/k_v", response_class=HTMLResponse)
 async def kv(request: Request, db: Session = Depends(database.get_db)):
-    # log.info("________________________________________")
     orders_from_db = db.query(models.orders).filter(models.orders.order_status == "active").all()
     list_of_dishes_with_qti: dict[int, dict[str:int]] = {}
     log.info(f"orders: {orders_from_db}")
@@ -165,9 +155,7 @@ async def kv(request: Request, db: Session = Depends(database.get_db)):
             log.info(f"Dish ID: {dish_id}, Quantity: {qti}")
             dish_name:str = db.query(models.menu.dish_name).filter(models.menu.dish_id == dish_id).scalar()
             log.info(f"Dish Name: {dish_name}")
-            # It overwrites dishes not add them!
             list_of_dishes_with_qti[order.order_id][dish_name] = qti
-        pass
     log.info(f"Full list to pass: {list_of_dishes_with_qti}")
     return templates.TemplateResponse("kitchen_view.html", {"request": request, "kv_order": list_of_dishes_with_qti, "id": 0})
 
@@ -175,9 +163,9 @@ async def kv(request: Request, db: Session = Depends(database.get_db)):
 @app.post("/complete/{or_id}", response_class=HTMLResponse)
 async def rm_comp_order(or_id: int, request: Request, db: Session = Depends(database.get_db)):
     remove = (db.query(models.orders).filter(models.orders.order_id == or_id).first())
-    remove.order_status = "Ready"
+    remove.order_status = "ready"
     db.commit()
-    db.refresh()
+    db.refresh(remove)
     log.info(f"Order ID: {or_id} is ready")
     return RedirectResponse(url="/k_v")
 
