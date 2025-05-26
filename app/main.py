@@ -3,10 +3,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, relationship
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime, func
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime, func, or_
 from app import schemas, models, database
 import logging as log
 import time as t
+from datetime import datetime as dt
 from collections import Counter
 
 log.basicConfig(level='INFO',
@@ -29,7 +30,21 @@ templates = Jinja2Templates(directory="templates")
 ### Raport Logic - Power BI
 @app.get("/", response_class=HTMLResponse)
 async def read_sales(request: Request, db: Session = Depends(database.get_db)): 
-    return templates.TemplateResponse("default.html", {"request": request})
+    if dt.now().month < 10:
+        dt_month = f"0{dt.now().month}"
+        log.info(f"Current Month: {dt_month}")
+    ### TODO ---> A bit more complex then I thought
+    ## Daily Sales [Name from Menu_items, Times Sold from ordered_dishes(count), Revenue (Times Sold * cost From Menu_items)]
+    daily_sales_order_id = db.query(models.orders.order_id).filter(
+        or_(models.orders.order_status == "active",
+            models.orders.order_status == "completed"),
+        models.orders.created_at.like(f"{dt.now().year}-{dt_month}%")
+        ).all()
+    log.info(f"Query Daily Sales: {daily_sales_order_id}")
+    daily_sales_
+
+    qms = db.query(models.orders).filter(models.orders.order_status == "completed").limit(10).all()
+    return templates.TemplateResponse("default.html", {"request": request, "query_daily_sales": daily_sales_order_id, "query_monthly_sales": ...})
 
 # Order Page - Add Positions Box
 @app.get("/add_dish_html", response_class=HTMLResponse)

@@ -36,6 +36,17 @@ h1 {
     min-height: 50px;
 }
 
+table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+}
+
+td, th {
+    border: 1px solid black;
+    padding: 5px;
+}
+
 </style>    
 <body>
 
@@ -50,6 +61,32 @@ h1 {
         <h1>Monthly Sales Report</h1>
         <iframe src="/app/BI_reports/Daily.pdf" type="application/pdf" width="100%" height="800px"></iframe>
 
+    </section>
+    <section class="Sales" id="Daily">
+        
+        <h1>Daily Sales Report - Query</h1>
+        <table>
+            <tr>
+                <th>Dish</th>
+                <th>Times Sold</th>
+                <th>Revenue</th>
+            </tr>
+            <tr>
+                {% for row in query_daily_sales %} 
+                
+                    <td>{{row[0]}}</td>
+                    <td>{{row[1]}}</td>
+                    <td>{{row[2]}}</td>
+            
+                {% endfor %}
+            </tr>
+        </table>
+        
+    </section>
+    <section class="Sales" id="Month">
+
+        <h1>Monthly Sales Report - Query</h1>
+       {{ query_monthly_sales }}
     </section>
     <section class="Sales" id="btn">
 
