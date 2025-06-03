@@ -71,22 +71,22 @@ td, th {
                 <th>Times Sold</th>
                 <th>Revenue</th>
             </tr>
-            <tr>
-                {% for row in query_daily_sales %} 
-                
-                    <td>{{row[0]}}</td>
-                    <td>{{row[1]}}</td>
-                    <td>{{row[2]}}</td>
-            
+                {% for row in daily_report %} 
+                    <tr>
+                    
+                        <td>{{row[0]}}</td>
+                        <td>{{row[1]}}</td>
+                        <td>{{row[2]*row[1]}}</td>
+                    
+                    </tr>
                 {% endfor %}
-            </tr>
         </table>
         
     </section>
     <section class="Sales" id="Month">
 
         <h1>Monthly Sales Report - Query</h1>
-       {{ query_monthly_sales }}
+       {{ daily_report }}
     </section>
     <section class="Sales" id="btn">
 

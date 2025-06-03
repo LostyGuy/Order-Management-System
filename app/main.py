@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, relationship
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime, func, or_
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, DateTime, func, or_, desc
 from app import schemas, models, database
 import logging as log
 import time as t
@@ -32,7 +32,7 @@ templates = Jinja2Templates(directory="templates")
 async def read_sales(request: Request, db: Session = Depends(database.get_db)): 
     if dt.now().month < 10:
         dt_month = f"0{dt.now().month}"
-        log.info(f"Current Month: {dt_month}")
+        # log.info(f"Current Month: {dt_month}")
     ### TODO ---> A bit more complex then I thought
     ## Daily Sales [Name from Menu_items, Times Sold from ordered_dishes(count), Revenue (Times Sold * cost From Menu_items)]
     daily_sales_order_id = db.query(models.orders.order_id).filter(
@@ -40,11 +40,45 @@ async def read_sales(request: Request, db: Session = Depends(database.get_db)):
             models.orders.order_status == "completed"),
         models.orders.created_at.like(f"{dt.now().year}-{dt_month}%")
         ).all()
-    log.info(f"Query Daily Sales: {daily_sales_order_id}")
-    daily_sales_
+    daily_sales_order_id = [row[0] for row in daily_sales_order_id]
+    # log.info(f"Query Daily Sales [IDs]: {daily_sales_order_id}")
+    
+    Times_Sold_and_Id = db.query(models.ordered_dishes.dish_id,
+        func.count(models.ordered_dishes.dish_id).label("Occurrence")
+        ).filter(models.ordered_dishes.order_id.in_(daily_sales_order_id)
+            ).group_by(models.ordered_dishes.dish_id
+            ).order_by(func.count(models.ordered_dishes.dish_id
+            ).desc()).limit(3).all()
+    only_id: list[int] = [id[0] for id in Times_Sold_and_Id]
+    log.info(f"Times Sold: {Times_Sold_and_Id}, it's ID: {only_id}")
+    ### TODO ---> Make sure that it takes the quantity label into account !!!
+    
+    Dish_Name = db.query(
+        models.menu.dish_name, models.menu.dish_id
+        ).filter(
+        models.menu.dish_id.in_(only_id)
+    ).distinct().all()
+    # log.info(f"Dish Names with ID: {Dish_Name}")
+    
+    Revenue = db.query(models.menu.course_cost, models.menu.dish_id).filter(models.menu.dish_id.in_(only_id)).all()
+    # log.info(f"Revenue: {Revenue}")
+    
+    daily_report: list[tuple[str, int, float]] = []
+    
+    times_sold_dict = {dish_id: times_sold for dish_id, times_sold in Times_Sold_and_Id}
+    dish_name_dict = {dish_id: dish_name for dish_name, dish_id in Dish_Name}
+    revenue_dict = {dish_id: float(cost) for cost, dish_id in Revenue}
 
-    qms = db.query(models.orders).filter(models.orders.order_status == "completed").limit(10).all()
-    return templates.TemplateResponse("default.html", {"request": request, "query_daily_sales": daily_sales_order_id, "query_monthly_sales": ...})
+    for dish_id in only_id:
+        name = dish_name_dict.get(dish_id)
+        times_sold = times_sold_dict.get(dish_id)
+        revenue = revenue_dict.get(dish_id)
+        daily_report.append((name, times_sold, revenue))
+
+    log.info(f"Daily Report: {daily_report}")
+        
+            
+    return templates.TemplateResponse("default.html", {"request": request, "daily_report": daily_report, "query_monthly_sales": ...})
 
 # Order Page - Add Positions Box
 @app.get("/add_dish_html", response_class=HTMLResponse)
@@ -78,7 +112,7 @@ async def place_order(request: Request, db: Session = Depends(database.get_db)):
         def disp_id() -> int:
             id: int = db.query(func.max(models.orders.display_id)).scalar()
             log.info(f"Display_id: {id}")
-            if id == "None":
+            if id is None:
                 return 1
             else:
                 return (id + 1)
